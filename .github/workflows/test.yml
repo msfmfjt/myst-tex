@@ -1,0 +1,34 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install LaTeX (LuaLaTeX + Japanese)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            latexmk texlive-luatex texlive-lang-japanese \
+            texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+      - run: npm ci
+      - run: npm test
+      - name: Upload build output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: |
+            _build/exports
+            _build/pdf
+            _build/temp/**/*.log
+          if-no-files-found: ignore

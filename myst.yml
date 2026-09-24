@@ -1,6 +1,8 @@
 version: 1
 project:
   title: MyST + TeX
+  authors:
+    - name: msfmfjt
   plugins:
     - plugins/tex-passthrough.mjs
   toc:
@@ -11,5 +13,8 @@ project:
     - format: tex
       template: templates/tex-passthrough
       output: _build/exports/book.tex
+    - format: pdf
+      template: templates/tex-passthrough
+      output: _build/pdf/book.pdf
 site:
   template: book-theme

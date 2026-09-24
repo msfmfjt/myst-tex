@@ -55,3 +55,6 @@ packages:
   - natbib
   - amsmath
   - amssymb
+  - luatexja
+build:
+  engine: -lualatex
