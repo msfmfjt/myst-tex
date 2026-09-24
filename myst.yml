@@ -1,0 +1,15 @@
+version: 1
+project:
+  title: MyST + TeX
+  plugins:
+    - plugins/tex-passthrough.mjs
+  toc:
+    - file: index.md
+    - file: chapters/intro.tex
+    - file: chapters/methods.md
+  exports:
+    - format: tex
+      template: templates/tex-passthrough
+      output: _build/exports/book.tex
+site:
+  template: book-theme
