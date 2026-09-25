@@ -15,6 +15,31 @@ the original source.
 | `\eqref{eq:euler}` | `(\ref{eq:euler})` | Kept as is |
 | HTML rendering and cross-references | Work | Work (unchanged) |
 
+## Example: PDF output with and without the plugin
+
+The page built from [`chapters/intro.tex`](chapters/intro.tex), with the same template and content.
+The only difference is whether the plugin is listed in `myst.yml`.
+
+| Without plugin | With plugin |
+|---|---|
+| ![PDF page without the plugin](docs/images/without-plugin.png) | ![PDF page with the plugin](docs/images/with-plugin.png) |
+
+The source of the last lines:
+
+```latex
+$x \in \R$ with \hspace{1cm} a space,\vspace{2mm}
+\begin{tabular}{|c|c|}\hline a & b \\\hline\end{tabular}
+```
+
+- **Without the plugin**, `\hspace{1cm}` is dropped, and the `tabular` is rewritten as a full-width
+  `booktabs` table on its own line, without the `|c|c|` borders or `\hline`.
+  "See equation (1)." also starts a new indented paragraph, because the paragraph is split after the equation.
+- **With the plugin**, the source is typeset exactly as written: the 1cm gap, the boxed inline table,
+  and "See equation (1)." continuing the paragraph after the equation.
+
+To regenerate these images, run `npm run compare` (requires LuaLaTeX, latexmk, and `pdftoppm` from poppler).
+It writes both PDFs and page images to `_build/compare/`. CI also runs it and uploads the results.
+
 ## Usage
 
 ```sh
