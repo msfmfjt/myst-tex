@@ -1,4 +1,4 @@
-// LuaLaTeX で PDF までコンパイルできるかのテスト (latexmk がなければスキップ)
+// Check that the PDF compiles with LuaLaTeX (skipped without latexmk)
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
@@ -14,13 +14,13 @@ try {
   hasLatexmk = false;
 }
 
-test('PDF をビルドできる', { skip: !hasLatexmk && 'latexmk が見つからない' }, () => {
+test('builds the PDF', { skip: !hasLatexmk && 'latexmk not found' }, () => {
   const pdf = path.join(root, '_build/pdf/book.pdf');
   fs.rmSync(pdf, { force: true });
   execFileSync(path.join(root, 'node_modules/.bin/myst'), ['build', '--pdf'], {
     cwd: root,
     stdio: 'inherit',
   });
-  assert.ok(fs.existsSync(pdf), `${pdf} が生成されていない`);
+  assert.ok(fs.existsSync(pdf), `${pdf} was not generated`);
   assert.equal(fs.readFileSync(pdf).subarray(0, 5).toString(), '%PDF-');
 });

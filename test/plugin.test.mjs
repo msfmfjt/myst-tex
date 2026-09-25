@@ -1,4 +1,4 @@
-// tex-passthrough プラグイン単体のテスト
+// Unit tests for the tex-passthrough plugin
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -18,12 +18,12 @@ function run(file, source) {
   return { tree, children };
 }
 
-test('.tex 以外のファイルは変更しない', () => {
+test('leaves non-.tex files unchanged', () => {
   const { tree, children } = run('page.md', '# Title\n');
   assert.equal(tree.children, children);
 });
 
-test('.tex ページを raw ノードで包み、元ソースと構文木を保持する', () => {
+test('wraps .tex pages in a raw node with the original source and the AST', () => {
   const source = '\\section{A}\\label{a}\n\\hspace{1cm}\n';
   const { tree, children } = run('page.tex', source);
   assert.equal(tree.children.length, 1);
@@ -33,13 +33,13 @@ test('.tex ページを raw ノードで包み、元ソースと構文木を保�
   assert.equal(raw.children, children);
 });
 
-test('\\title{} の行だけを除く', () => {
-  const { tree } = run('titled.tex', '\\title{はじめに}\n\\subsection{背景}\n本文\n');
-  assert.equal(tree.children[0].tex, '\\subsection{背景}\n本文\n');
+test('removes only the \\title{} line', () => {
+  const { tree } = run('titled.tex', '\\title{Introduction}\n\\subsection{Background}\nBody\n');
+  assert.equal(tree.children[0].tex, '\\subsection{Background}\nBody\n');
 });
 
-test('\\title{} がなければソースはそのまま', () => {
-  const source = '本文 \\textbf{x}\n';
+test('keeps the source unchanged without \\title{}', () => {
+  const source = 'Body \\textbf{x}\n';
   const { tree } = run('untitled.tex', source);
   assert.equal(tree.children[0].tex, source);
 });

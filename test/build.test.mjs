@@ -1,4 +1,4 @@
-// サンプルプロジェクトを実際にビルドして出力を確認するテスト
+// Build the sample project and check its output
 import { test, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
@@ -24,13 +24,13 @@ before(() => {
   });
 });
 
-test('LaTeX 出力: .tex ページの本文が元ソース (\\title 除く) と一致する', () => {
+test('LaTeX: .tex page body matches the original source (minus \\title)', () => {
   const source = read('chapters/intro.tex').replace(/^\\title\{.*\}\n/m, '');
   const exported = read('_build/exports/book-intro.tex');
-  assert.equal(exported, `\\section{はじめに}\n\n${source}`.trimEnd());
+  assert.equal(exported, `\\section{Introduction}\n\n${source}`.trimEnd());
 });
 
-test('LaTeX 出力: テンプレートのプリアンブルと各ページの include', () => {
+test('LaTeX: template preamble and per-page includes', () => {
   const book = read('_build/exports/book.tex');
   for (const pkg of ['amsmath', 'amssymb', 'luatexja']) {
     assert.match(book, new RegExp(`\\\\usepackage\\{${pkg}\\}`));
@@ -39,24 +39,24 @@ test('LaTeX 出力: テンプレートのプリアンブルと各ページの in
   assert.match(book, /\\include\{book-methods\}/);
 });
 
-test('HTML: .tex ページのタイトルが \\title{} から付く', () => {
+test('HTML: .tex page title comes from \\title{}', () => {
   const pages = readJson('_build/html/config.json').projects[0].pages;
   assert.deepEqual(
     pages.map((p) => [p.slug, p.title]),
-    [['intro', 'はじめに'], ['methods', '手法']],
+    [['intro', 'Introduction'], ['methods', 'Methods']],
   );
 });
 
-test('HTML: raw ノードの中の構文木が描画される', () => {
+test('HTML: the AST inside the raw node is rendered', () => {
   const [raw] = readJson('_build/html/intro.json').mdast.children;
   assert.equal(raw.type, 'raw');
   assert.ok(findAll(raw, 'math').length > 0);
   const html = read('_build/html/intro/index.html');
   const article = html.slice(html.indexOf('<article'), html.indexOf('</article>'));
-  assert.match(article, /<li[^>]*>.*項目1/s);
+  assert.match(article, /<li[^>]*>.*Item 1/s);
 });
 
-test('HTML: Markdown から TeX 側のラベルへの相互参照が解決される', () => {
+test('HTML: cross-references from Markdown to TeX labels resolve', () => {
   const refs = findAll(readJson('_build/html/methods.json').mdast, 'crossReference');
   const byId = Object.fromEntries(refs.map((r) => [r.identifier, r]));
   assert.equal(byId['sec:intro']?.resolved, true);

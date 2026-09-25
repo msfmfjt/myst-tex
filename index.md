@@ -1,3 +1,3 @@
-# ホーム
+# Home
 
-MyST Markdown と TeX を混在させたプロジェクトです。
+A project that mixes MyST Markdown and TeX.

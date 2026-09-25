@@ -1,3 +1,3 @@
-# 手法
+# Methods
 
-TeX 側の [](#sec:intro) と [](#eq:euler) を参照できます。
+You can reference labels from the TeX page: [](#sec:intro) and [](#eq:euler).
