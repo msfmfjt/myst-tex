@@ -15,21 +15,41 @@ the original source.
 | `\eqref{eq:euler}` | `(\ref{eq:euler})` | Kept as is |
 | HTML rendering and cross-references | Work | Work (unchanged) |
 
-## Example: PDF output with and without the plugin
+## Examples: PDF output with and without the plugin
 
-The page built from [`chapters/intro.tex`](chapters/intro.tex), with the same template and content.
+Each example compares a page of the PDF built with the same template and content.
 The only difference is whether the plugin is listed in `myst.yml`.
+
+### Rich LaTeX
+
+[`chapters/rich.tex`](chapters/rich.tex) uses features that MyST's TeX parser does not support:
+a TikZ diagram, a table with `\multirow`/`\multicolumn` and `\rowcolor`, `\colorbox`/`\textcolor`/`\fbox`,
+a custom macro with an argument (`\todo{...}`), `siunitx` units, and `algpseudocode`.
 
 | Without plugin | With plugin |
 |---|---|
-| ![PDF page without the plugin](docs/images/without-plugin.png) | ![PDF page with the plugin](docs/images/with-plugin.png) |
+| ![Rich LaTeX page without the plugin](docs/images/rich-without-plugin.png) | ![Rich LaTeX page with the plugin](docs/images/rich-with-plugin.png) |
 
-The source of the last lines:
+| Feature | Without plugin | With plugin |
+|---|---|---|
+| TikZ diagram | Missing | Rendered |
+| Table with merged and shaded cells | Cells flattened into a plain table; `green!12` printed as text | Rendered as written |
+| `\num{1e-12}` | Printed as `1e-12` | $1 \times 10^{-12}$ |
+| `\textcolor`, `\colorbox`, `\fbox`, `\todo{...}` | Color and boxes dropped; "boxed" missing | Rendered |
+| `algorithmic` pseudocode | Missing | Rendered with line numbers |
+
+### Spacing and simple tables
+
+[`chapters/intro.tex`](chapters/intro.tex) ends with:
 
 ```latex
 $x \in \R$ with \hspace{1cm} a space,\vspace{2mm}
 \begin{tabular}{|c|c|}\hline a & b \\\hline\end{tabular}
 ```
+
+| Without plugin | With plugin |
+|---|---|
+| ![PDF page without the plugin](docs/images/without-plugin.png) | ![PDF page with the plugin](docs/images/with-plugin.png) |
 
 - **Without the plugin**, `\hspace{1cm}` is dropped, and the `tabular` is rewritten as a full-width
   `booktabs` table on its own line, without the `|c|c|` borders or `\hline`.
@@ -37,8 +57,11 @@ $x \in \R$ with \hspace{1cm} a space,\vspace{2mm}
 - **With the plugin**, the source is typeset exactly as written: the 1cm gap, the boxed inline table,
   and "See equation (1)." continuing the paragraph after the equation.
 
-To regenerate these images, run `npm run compare` (requires LuaLaTeX, latexmk, and `pdftoppm` from poppler).
-It writes both PDFs and page images to `_build/compare/`. CI also runs it and uploads the results.
+### Regenerating the images
+
+Run `npm run compare` (requires LuaLaTeX, latexmk, and `pdftoppm`/`pdfinfo` from poppler).
+It writes both PDFs and an image of every page after the title page to `_build/compare/`.
+CI also runs it and uploads the results.
 
 ## Usage
 
@@ -101,7 +124,7 @@ render its `children`.
 Because mystmd does not render the passed-through body itself, it no longer adds packages such as `amsmath`
 automatically, so the template loads the packages the body needs.
 
-- Included: `amsmath`, `amssymb`, `luatexja`
+- Included: `amsmath`, `amssymb`, `luatexja`, `xcolor` (with the `table` option), `tikz` (with the `arrows.meta` and `positioning` libraries), `multirow`, `siunitx`, `algpseudocode`
 - The PDF engine is LuaLaTeX (`build.engine` in `template.yml`); Japanese text is typeset with `luatexja`.
 - To use other packages, add a `\usepackage` line to `template.tex` and list the package under `packages` in `template.yml`.
 
@@ -116,6 +139,6 @@ automatically, so the template loads the packages the body needs.
 ## Limitations
 
 - Only `.tex` pages are passed through. Markdown pages are still converted to LaTeX by MyST.
-- `.tex` pages are still parsed for HTML, so commands MyST cannot handle produce `Unhandled TEX conversion` errors. These do not affect LaTeX output.
+- The plugin only changes LaTeX/PDF output. The HTML site still shows MyST's parse of each `.tex` page, so features MyST cannot handle look the same as in the "Without plugin" column above (for example, the TikZ diagram is missing). They also produce `Unhandled TEX conversion` errors during the build. These do not affect LaTeX output.
 - Paths in `\input` and `\includegraphics` are not rewritten. Output is written under `_build/`, so paths relative to the source file may not resolve.
 - The plugin relies on mystmd internals (the LaTeX writer printing a `raw` node's `tex` verbatim). Tested with mystmd v1.11.0.
