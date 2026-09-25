@@ -56,5 +56,10 @@ packages:
   - amsmath
   - amssymb
   - luatexja
+  - xcolor
+  - tikz
+  - multirow
+  - siunitx
+  - algpseudocode
 build:
   engine: -lualatex

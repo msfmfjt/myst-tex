@@ -24,18 +24,22 @@ before(() => {
   });
 });
 
-test('LaTeX: .tex page body matches the original source (minus \\title)', () => {
-  const source = read('chapters/intro.tex').replace(/^\\title\{.*\}\n/m, '');
-  const exported = read('_build/exports/book-intro.tex');
-  assert.equal(exported, `\\section{Introduction}\n\n${source}`.trimEnd());
-});
+for (const [name, title] of [['intro', 'Introduction'], ['rich', 'Rich LaTeX']]) {
+  test(`LaTeX: ${name}.tex body matches the original source (minus \\title)`, () => {
+    const source = read(`chapters/${name}.tex`).replace(/^\\title\{.*\}\n/m, '');
+    const exported = read(`_build/exports/book-${name}.tex`);
+    assert.equal(exported, `\\section{${title}}\n\n${source}`.trimEnd());
+  });
+}
 
 test('LaTeX: template preamble and per-page includes', () => {
   const book = read('_build/exports/book.tex');
-  for (const pkg of ['amsmath', 'amssymb', 'luatexja']) {
-    assert.match(book, new RegExp(`\\\\usepackage\\{${pkg}\\}`));
+  for (const pkg of ['amsmath', 'amssymb', 'luatexja', 'tikz', 'multirow', 'siunitx', 'algpseudocode']) {
+    assert.match(book, new RegExp(`\\\\usepackage(\\[[^\\]]*\\])?\\{${pkg}\\}`));
   }
+  assert.match(book, /\\usepackage\[table\]\{xcolor\}/);
   assert.match(book, /\\include\{book-intro\}/);
+  assert.match(book, /\\include\{book-rich\}/);
   assert.match(book, /\\include\{book-methods\}/);
 });
 
@@ -43,7 +47,7 @@ test('HTML: .tex page title comes from \\title{}', () => {
   const pages = readJson('_build/html/config.json').projects[0].pages;
   assert.deepEqual(
     pages.map((p) => [p.slug, p.title]),
-    [['intro', 'Introduction'], ['methods', 'Methods']],
+    [['intro', 'Introduction'], ['rich', 'Rich LaTeX'], ['methods', 'Methods']],
   );
 });
 

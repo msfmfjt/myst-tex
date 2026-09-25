@@ -8,6 +8,7 @@ project:
   toc:
     - file: index.md
     - file: chapters/intro.tex
+    - file: chapters/rich.tex
     - file: chapters/methods.md
   exports:
     - format: tex

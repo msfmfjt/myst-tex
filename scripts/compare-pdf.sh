@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Build the PDF with and without the tex-passthrough plugin and render the
-# .tex page (page 2) of each to PNG for comparison.
-# Requires latexmk/LuaLaTeX and pdftoppm (poppler-utils).
+# Build the PDF with and without the tex-passthrough plugin and render each
+# body page (everything after the title page) to PNG for comparison.
+# Requires latexmk/LuaLaTeX and pdftoppm/pdfinfo (poppler-utils).
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
@@ -12,7 +12,11 @@ mkdir -p "$out"
 build_pdf() { # <project dir> <output name>
   (cd "$1" && "$root/node_modules/.bin/myst" build --pdf)
   cp "$1/_build/pdf/book.pdf" "$out/$2.pdf"
-  pdftoppm -f 2 -l 2 -r 110 -png -singlefile "$out/$2.pdf" "$out/$2"
+  local pages
+  pages="$(pdfinfo "$out/$2.pdf" | awk '/^Pages:/ {print $2}')"
+  for ((p = 2; p <= pages; p++)); do
+    pdftoppm -f "$p" -l "$p" -r 110 -png -singlefile "$out/$2.pdf" "$out/$2-p$p"
+  done
 }
 
 build_pdf "$root" with-plugin

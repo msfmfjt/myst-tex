@@ -1,0 +1,52 @@
+\title{Rich LaTeX}
+\newcommand{\todo}[1]{\colorbox{yellow!40}{\textsf{\small TODO: #1}}}
+
+\subsection{Diagram}\label{sec:rich-diagram}
+
+\begin{center}
+\begin{tikzpicture}[
+    box/.style={draw, rounded corners, fill=blue!8, minimum width=2.4cm, minimum height=0.8cm},
+    >={Stealth[length=2mm]}, node distance=0.6cm and 1.4cm]
+  \node[box] (tex) {\texttt{rich.tex}};
+  \node[box, right=of tex] (ast) {MyST AST};
+  \node[box, above right=of ast] (html) {HTML};
+  \node[box, below right=of ast, fill=green!12] (pdf) {PDF};
+  \draw[->] (tex) -- node[above, font=\small] {parse} (ast);
+  \draw[->] (ast) -- (html);
+  \draw[->, dashed, green!50!black] (tex.south) |- node[below, pos=0.75, font=\small] {verbatim} (pdf);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Table with merged and shaded cells}
+
+\begin{center}
+\begin{tabular}{|l|c|c|c|}
+  \hline
+  \multirow{2}{*}{\textbf{Solver}} & \multicolumn{2}{c|}{\textbf{Time}} & \multirow{2}{*}{\textbf{Error}} \\
+  \cline{2-3}
+  & Setup & Run & \\
+  \hline
+  Direct    & \SI{1.2}{\second} & \SI{35.0}{\second} & \num{1e-12} \\
+  \rowcolor{green!12}
+  Iterative & \SI{0.3}{\second} & \SI{4.1}{\second}  & \num{3.2e-8} \\
+  \hline
+\end{tabular}
+\end{center}
+
+\subsection{Inline styling and units}
+
+Gravity is \SI{9.81}{\metre\per\second\squared}, and the result is
+\textcolor{red!70!black}{\textbf{not yet verified}} \todo{check units}.
+Key terms can be \fbox{boxed} or \underline{underlined}.
+
+\subsection{Algorithm}
+
+\begin{algorithmic}[1]
+  \Require matrix $A$, vector $b$, tolerance $\varepsilon$
+  \State $x \gets 0$, \quad $r \gets b$
+  \While{$\lVert r \rVert > \varepsilon$}
+    \State $x \gets x + \alpha\, r$
+    \State $r \gets b - A x$
+  \EndWhile
+  \State \Return $x$
+\end{algorithmic}
