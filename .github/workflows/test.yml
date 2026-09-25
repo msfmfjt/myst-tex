@@ -19,9 +19,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             latexmk texlive-luatex texlive-lang-japanese \
-            texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+            texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended \
+            poppler-utils
       - run: npm ci
       - run: npm test
+      - name: Compare PDF output with and without the plugin
+        run: npm run compare
       - name: Upload build output
         if: always()
         uses: actions/upload-artifact@v4
@@ -30,5 +33,6 @@ jobs:
           path: |
             _build/exports
             _build/pdf
+            _build/compare
             _build/temp/**/*.log
           if-no-files-found: ignore

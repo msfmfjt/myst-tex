@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node --test --test-concurrency=1 'test/*.test.mjs'",
     "start": "myst start",
-    "build": "myst build --html"
+    "build": "myst build --html",
+    "compare": "bash scripts/compare-pdf.sh"
   },
   "keywords": [],
   "author": "",
